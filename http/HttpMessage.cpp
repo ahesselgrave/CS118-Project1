@@ -27,14 +27,14 @@ void HttpMessage::setMethod(){
 
 }
 
-// Needs to be implemented
-void HttpMessage::addHeader(string s){
 
+void HttpMessage::addHeader(string s){
+  headers.push_back(s);
 }
 
-//Needs to be implemented
-void HttpMessage::setData(string s){
 
+void HttpMessage::setData(string s){
+  data = s;
 }
 
 //Needs to be implemented
