@@ -3,3 +3,5 @@
 .vagrant
 web-server
 web-client
+*.*~
+*~
