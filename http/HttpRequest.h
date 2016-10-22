@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <stdint.h>
 #include "HttpMessage.h"
 
 using namespace std;
@@ -19,7 +20,7 @@ class HttpRequest : public HttpMessage {
   string fileName; // used by parseRequestInput to extract the file name from the client request
  public:
   HttpRequest(string request); // constructor to be used when sending
-  //  HttpRequest(vector<uint8_t> encodedRequest); // constructor to be used when receiving
+  HttpRequest(vector<uint8_t> encodedRequest); // constructor to be used when receiving
   void parseRequestInput(string request); // parses a request from the client and stores url, port, and filename
   string getUrl(); // returns url
   string getPort(); // returns port

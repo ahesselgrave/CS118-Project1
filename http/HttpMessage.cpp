@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include "HttpMessage.h"
 using namespace std;
 
@@ -37,12 +38,28 @@ void HttpMessage::setData(string s){
   data = s;
 }
 
-//Needs to be implemented
-void HttpMessage::encode(){
-
+//Needs testing
+void HttpMessage::setHeaderString(){
+  string partialHeader;
+  for(int i=0; i<headers.size(); i++){
+    partialHeader = partialHeader + "\r\n" + headers[i];
+  }
+  headerString = partialHeader;
 }
 
-//Needs to be implemented
-void HttpMessage::consume(){
+// Needs testing
+void HttpMessage::createMessageString(){
+  messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + "\r\n" + headerString + "'\r\n\r\n" + data;
+}
 
+//Needs testing
+vector<uint8_t> HttpMessage::encode(){
+  vector<uint8_t> encodedRequest(messageString.begin(), messageString.end());
+  return encodedRequest;
+}
+
+//Needs teesting
+string HttpMessage::consume(vector<uint8_t> wire){
+  string consumedMessage(wire.begin(), wire.end());
+  return consumedMessage;
 }

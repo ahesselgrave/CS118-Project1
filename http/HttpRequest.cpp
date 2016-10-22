@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdint.h>
 #include "HttpRequest.h"
 using namespace std;
 
@@ -12,10 +13,10 @@ HttpRequest::HttpRequest(string request){
 }
 
 
-/* Needs to be implemented
+// Needs to be implemented
 HttpRequest::HttpRequest(vector<uint8_t> encodedRequest){
 
-}*/
+}
 
 // Needs to be fixed because "url" should have one ":" in the middle of it
 void HttpRequest::parseRequestInput(string request){
