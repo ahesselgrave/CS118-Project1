@@ -40,16 +40,16 @@ void HttpMessage::setData(string s){
 
 //Needs testing
 void HttpMessage::setHeaderString(){
-  string partialHeader;
-  for(int i=0; i<headers.size(); i++){
-    partialHeader = partialHeader + "\r\n" + headers[i];
-  }
-  headerString = partialHeader;
+    string partialHeader;
+    for(int i=0; i<headers.size(); i++){
+	partialHeader = partialHeader + "\r\n" + headers[i];
+    }
+    headerString = partialHeader;
 }
 
 // Needs testing
 void HttpMessage::createMessageString(){
-  messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + "\r\n" + headerString + "'\r\n\r\n" + data;
+  messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + "\r\n" + headerString + "\r\n\r\n" + data;
 }
 
 //Needs testing
