@@ -76,70 +76,74 @@ int main( int argc, char *argv[] )
 	      << std::endl;
 	
     // set socket to listen status - UNMODIFIED SAMPLE CODE
-    if (listen(sockfd, 1) == -1) {
+    if (listen(sockfd, 15) == -1) {
 	perror("listen");
 	return 3;
     }
-    
-    // accept a new connection - UNMODIFIED SAMPLE CODE
-    // NEED TO IMPLEMENT MULTITHREADING
-    struct sockaddr_in clientAddr;
-    socklen_t clientAddrSize = sizeof(clientAddr);
-    int clientSockfd = accept(sockfd, 
-			      (struct sockaddr*) &clientAddr,
-			      &clientAddrSize);
-    
-    if (clientSockfd == -1) {
-	perror("accept");
-	return 4;
-    }
-    
-    char ipstr[INET_ADDRSTRLEN] = {'\0'};
-    inet_ntop(clientAddr.sin_family,
-	      &clientAddr.sin_addr,
-	      ipstr,
-	      sizeof(ipstr));
 
-    std::cout << "Accept a connection from: "
-	      << ipstr 
-	      << ":" 
-	      << ntohs(clientAddr.sin_port)
-	      << std::endl;
-    
-    // read/write data from/into the connection - 
-    // UNMODIFED SAMPLE CODE - definitely needs modification
-    // create HttpRequest using vector constructor
-    // Need to parse request - use parseRequestInput() from HttpRequest 
-    // Need to lookup file
-    // Need to encode HttpReponse with file
-    /*
-      bool isEnd = false;
-      char buf[20] = {0};
-      std::stringstream ss;
-      
-      while (!isEnd) {
-      memset(buf, '\0', sizeof(buf));
-      
-      if (recv(clientSockfd, buf, 20, 0) == -1) {
-      perror("recv");
-      return 5;
-      }
-      
-      ss << buf << std::endl;
-      std::cout << buf << std::endl;
-      
-      
-      if (send(clientSockfd, buf, 20, 0) == -1) {
-      perror("send");
-      return 6;
-      }
-      
-      if (ss.str() == "close\n")
-      break;
-      
-      ss.str("");
-      }
-      
-      close(clientSockfd);*/
+    struct sockaddr_in clientAddr;    
+    socklen_t clientAddrSize = sizeof(clientAddr);
+    char buf[1000] = {0};
+    char *output;
+    while(1) {
+	int clientSockfd = accept(sockfd, 
+				  (struct sockaddr*) &clientAddr,
+				  &clientAddrSize);
+	
+	if (clientSockfd == -1) {
+	    perror("accept");
+	    return 4;
+	}
+	
+	int pid;
+	if ((pid=fork()) < -1) {
+	    perror("fork");
+	    return 5;
+	} else if (pid == 0) {
+	    close(sockfd);
+
+	    char ipstr[INET_ADDRSTRLEN] = {'\0'};
+	    inet_ntop(clientAddr.sin_family,
+		      &clientAddr.sin_addr,
+		      ipstr,
+		      sizeof(ipstr));
+	    
+	    std::cout << "Accepted a connection from: "
+		      << ipstr 
+		      << ":" 
+		      << ntohs(clientAddr.sin_port)
+		      << std::endl;
+
+	    if (recv(clientSockfd, buf, 1000, 0) == -1) {
+		perror("recv");
+		return 5;
+	    }
+	    
+	    std::cout << "Data from client: \n"
+		      << buf
+		      << std::endl 
+		      << std::endl;
+
+	    output = (char *)malloc(sizeof(char) * (strlen(buf) + 1));
+	    output = strcpy(output, buf);
+
+	    if (send(clientSockfd, (void *)output, strlen(buf), 0) == -1) {
+		perror("send");
+		free(output);
+		return 6;
+	    }
+
+	    if (close(clientSockfd) == -1) {
+		perror("close");
+		free(output);
+		return 7;
+	    }
+	    free(output);
+	    
+	    std::cout << "Child process terminating" << std::endl;
+	    exit(0);
+	}
+    }
+
     return 0;
 }
