@@ -13,12 +13,10 @@ HttpRequest::HttpRequest(string request){
 }
 
 
-// Needs to be implemented
 HttpRequest::HttpRequest(vector<uint8_t> encodedRequest){
-
+  encodedMessage=encodedRequest;
 }
 
-// Needs to be fixed because "url" should have one ":" in the middle of it
 void HttpRequest::parseRequestInput(string request){
   string firstHalfUrl;
   string secondHalfUrl;

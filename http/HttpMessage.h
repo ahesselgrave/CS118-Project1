@@ -21,6 +21,7 @@ protected:
     string method; // method to be used
     string headerString; // all headers stored as string
     string messageString; // entire HTTP message stored as string
+    vector<uint8_t> encodedMessage; // holds incoming message stored as byte vector. Used by constructor.
 public:
     HttpMessage(); // constructor
     void setFirstLeft(string s); // sets the member "firstLeft"
@@ -32,6 +33,7 @@ public:
     void setHeaderString(); // sets headerString from headers vector
     void createMessageString(); // creates entire HTTP message as string
     vector<uint8_t> encode(); // encodes all portion of the message into a byte vector
+    vector<uint8_t> getEncodedMessage(); // getter for encodedMessage
     string consume(vector<uint8_t> wire); // takes in a byte vector representation of a message and extracts the fields
 };
 

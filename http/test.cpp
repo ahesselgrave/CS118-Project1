@@ -13,6 +13,5 @@ int main (){
   request.parseRequestInput(request.getRequestInput());
   request.setRequestInput();
   request.displaySetInput();
-
   return 0;
 }

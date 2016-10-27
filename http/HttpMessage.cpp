@@ -38,7 +38,7 @@ void HttpMessage::setData(string s){
   data = s;
 }
 
-//Needs testing
+//Tested
 void HttpMessage::setHeaderString(){
     string partialHeader;
     for(int i=0; i<headers.size(); i++){
@@ -47,12 +47,12 @@ void HttpMessage::setHeaderString(){
     headerString = partialHeader;
 }
 
-// Needs testing
+//Tested
 void HttpMessage::createMessageString(){
   messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + "\r\n" + headerString + "\r\n\r\n" + data;
 }
 
-//Needs testing
+//Tested
 vector<uint8_t> HttpMessage::encode(){
   vector<uint8_t> encodedRequest(messageString.begin(), messageString.end());
   return encodedRequest;
@@ -62,4 +62,8 @@ vector<uint8_t> HttpMessage::encode(){
 string HttpMessage::consume(vector<uint8_t> wire){
   string consumedMessage(wire.begin(), wire.end());
   return consumedMessage;
+}
+
+vector<uint8_t> HttpMessage::getEncodedMessage(){
+  return encodedMessage;
 }
