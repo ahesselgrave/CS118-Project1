@@ -18,14 +18,14 @@ HttpRequest::HttpRequest(vector<uint8_t> encodedRequest){
 }
 
 void HttpRequest::parseRequestInput(string request){
-  string firstHalfUrl;
-  string secondHalfUrl;
+  string firstHalfHost;
+  string secondHalfHost;
   istringstream requestStream(request);
-  getline(requestStream, firstHalfUrl, ':' );
-  getline(requestStream, secondHalfUrl, ':');
+  getline(requestStream, firstHalfHost, ':' );
+  getline(requestStream, secondHalfHost, ':');
   getline(requestStream, port, '/');
   getline(requestStream, fileName);
-  url = firstHalfUrl + ":" + secondHalfUrl;
+  host = firstHalfHost + ":" + secondHalfHost;
   requestStream.clear();
 }
 
@@ -37,8 +37,8 @@ string HttpRequest::getRequestInput(){
   return requestInput;
 }
 
-string HttpRequest::getUrl(){
-  return url;
+string HttpRequest::getHost(){
+  return host;
 }
 
 string HttpRequest::getPort(){
@@ -50,9 +50,9 @@ string HttpRequest::getFileName(){
 }
 
 void HttpRequest::setRequestInput(){
-  firstLeft = url;
-  firstMiddle = port;
-  firstRight = fileName;
+  firstLeft = "GET";
+  firstMiddle = fileName;
+  firstRight = "HTTP/1.1";
 }
 
 void HttpRequest::displaySetInput(){

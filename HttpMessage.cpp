@@ -59,11 +59,35 @@ vector<uint8_t> HttpMessage::encode(){
 }
 
 //Needs teesting
-string HttpMessage::consume(vector<uint8_t> wire){
+void HttpMessage::consume(vector<uint8_t> wire){
   string consumedMessage(wire.begin(), wire.end());
-  return consumedMessage;
+  messageString = consumedMessage;
 }
 
 vector<uint8_t> HttpMessage::getEncodedMessage(){
   return encodedMessage;
+}
+
+string HttpMessage::getMessageString();
+return messageString();
+
+// Ok to get request info. Needs more to get headers and data for response.
+void HttpMessage::parseMessageString(){
+  istringstream messageStream(messageString);
+  getline(messageStream, firstLeft, ' ');
+  getline(messageStream, firstMiddle, ' ');
+  getline(messageStream, firstRight, '\r');
+  messageStream.clear();
+}
+
+string HttpMessage::getFirstLeft(){
+  return firstLeft;
+}
+
+string HttpMessage::getFirstMiddle(){
+  return firstMiddle;
+}
+
+string HttpMessage::getFirstRight(){
+  return firstRight;
 }
