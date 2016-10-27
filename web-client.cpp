@@ -23,7 +23,23 @@ int main( int argc, char *argv[] )
     }
   }
 
+  for (int j = 0; j < argc - 1; j++){
+    //iterate through each item in clientArgs
+  }
+  /*
+  implementation for later (?)
+  for each item in clientArgs:
+     - isolate web server
+        - establish connection
+        - verify connection is established
+     - construct HTTP request
+     - wait for response
+        - parse response for success/failure codes
+     - save file to current directory
+        - name based on URL ending
 
+
+   */
 
 
 
