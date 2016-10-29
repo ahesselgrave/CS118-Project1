@@ -71,12 +71,23 @@ vector<uint8_t> HttpMessage::getEncodedMessage(){
 string HttpMessage::getMessageString();
 return messageString();
 
-// Ok to get request info. Needs more to get headers and data for response.
+// Tested and works on strings, but not sure about large data files
 void HttpMessage::parseMessageString(){
   istringstream messageStream(messageString);
+  string vectorTemp;
+  string lineTemp;
   getline(messageStream, firstLeft, ' ');
   getline(messageStream, firstMiddle, ' ');
   getline(messageStream, firstRight, '\r');
+  getline(messageStream, lineTemp, '\n');
+  getline(messageStream, vectorTemp, '\r');
+  while(vectorTemp!=""){
+    addHeader(vectorTemp);
+    getline(messageStream, lineTemp, '\n');
+    getline(messageStream, vectorTemp, '\r'); // while check
+  }
+  getline(messageStream, lineTemp, '\n');
+  getline(messageStream, data, '\0');
   messageStream.clear();
 }
 
