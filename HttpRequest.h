@@ -1,5 +1,4 @@
 // HttpRequest class extends HttpMessage class
-
 #ifndef HTTPREQUEST_H
 #define HTTPREQUEST_H
 
@@ -13,7 +12,7 @@
 using namespace std;
 
 class HttpRequest : public HttpMessage {
- private:
+   private:
   string requestInput; // used to store the entered request from the client
   string host; // used by parseRequestInput to extract the URL from the client request
   string port; // used by parseRequestInput to extract the port from the client request

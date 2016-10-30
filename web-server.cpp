@@ -1,5 +1,3 @@
-#include "HttpMessage.h"
-#include "HttpRequest.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -8,11 +6,31 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
-
+#include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <fstream>
+#include "HttpMessage.h"
+#include "HttpRequest.h"
+#include "HttpResponse.h"
+using namespace std;
 
+void sendResponse(vector<uint8_t> message, int clientSockfd) {
+    uint8_t *data = message.data();
+
+    if (send(clientSockfd, (void *) data, message.size(), 0) == -1) {
+	perror("send");
+	exit(6);
+    }
+    
+    if (close(clientSockfd) == -1) {
+	perror("close");
+	exit(7);
+    }
+    exit(0);
+}
 
 int main( int argc, char *argv[] )
 {
@@ -83,8 +101,7 @@ int main( int argc, char *argv[] )
 
     struct sockaddr_in clientAddr;    
     socklen_t clientAddrSize = sizeof(clientAddr);
-    char buf[1000] = {0};
-    char *output;
+
     while(1) {
 	int clientSockfd = accept(sockfd, 
 				  (struct sockaddr*) &clientAddr,
@@ -102,6 +119,8 @@ int main( int argc, char *argv[] )
 	} else if (pid == 0) {
 	    close(sockfd);
 
+	    char reqBuf[1000] = {0};
+
 	    char ipstr[INET_ADDRSTRLEN] = {'\0'};
 	    inet_ntop(clientAddr.sin_family,
 		      &clientAddr.sin_addr,
@@ -114,35 +133,75 @@ int main( int argc, char *argv[] )
 		      << ntohs(clientAddr.sin_port)
 		      << std::endl;
 
-	    if (recv(clientSockfd, buf, 1000, 0) == -1) {
+	    if (recv(clientSockfd, reqBuf, 1000, 0) == -1) {
 		perror("recv");
 		return 5;
 	    }
 	    
-	    std::cout << "Data from client: \n"
-		      << buf
-		      << std::endl 
+	    std::cout << "Request:\n"
+		      << reqBuf
 		      << std::endl;
 
-	    output = (char *)malloc(sizeof(char) * (strlen(buf) + 1));
-	    output = strcpy(output, buf);
+	    HttpMessage request;
+	    string requestStr(reqBuf);
+	    vector<uint8_t> outputVector(requestStr.begin(), requestStr.end());
+	    request.consume(outputVector);
 
-	    if (send(clientSockfd, (void *)output, strlen(buf), 0) == -1) {
-		perror("send");
-		free(output);
-		return 6;
-	    }
+	    try {
+		request.parseMessageString();
+		
+		string file = request.getFirstMiddle();
+		file.erase(0,1);
+		
+		std::cout << "Attempting to open \""
+			  << file
+			  << "\"\n";
+		
+		ifstream requestFile(file);
+		
+		if (requestFile.is_open()) {
+		    std::cout << "File is open " << std::endl;
+		    std::stringstream buffer;
+		    buffer << requestFile.rdbuf();
+		    requestFile.close();
+		    HttpResponse response("HTTP/1.0", 200, "OK");
+		    response.addHeader("Connection: close");
+		    response.setData(buffer.str());
+		    response.setHeaderString();
+		    response.createMessageString();
+		    sendResponse(response.encode(), clientSockfd);
+		} else {
+		    std::cout << "File not found" << std::endl;
+		    requestFile.close();
+		    HttpResponse response("HTTP/1.0", 404, "Not Found");
+		    response.addHeader("Connection: close");
+		    response.setData(
+			"{\"error\": \"File " + file + " not found\"}" );
+		    response.setHeaderString();
+		    response.createMessageString();
+		    vector<uint8_t> encoded = response.encode();
+		    sendResponse(encoded, clientSockfd);
+		}
+	    } catch (...) {
+		std::cout << "Caught exception in parseRequestInput"
+			  << std::endl;
 
-	    if (close(clientSockfd) == -1) {
-		perror("close");
-		free(output);
-		return 7;
+		HttpResponse response("HTTP/1.0", 400, "Bad Request");
+		response.addHeader("Connection: close");
+		response.setData(
+		    "{\"error\": \"Incorrectly formatted request\"}"
+		    );
+		response.createMessageString();
+		
+		std::cout << "Response: \n"
+			  << response.getMessageString()
+			  << std::endl;
+
+		vector<uint8_t> encoded = response.encode();
+		sendResponse(encoded, clientSockfd);
 	    }
-	    free(output);
-	    
-	    std::cout << "Child process terminating" << std::endl;
-	    exit(0);
 	}
+	close(clientSockfd);
     }
 
     return 0;

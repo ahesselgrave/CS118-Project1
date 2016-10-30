@@ -7,42 +7,44 @@
 #include <sstream>
 #include <vector>
 #include <stdint.h>
-using namespace std;
 
 class HttpMessage{
 protected:
     // this will be "method" for requests and "version" for responses
 
-    string firstLeft;
+    std::string firstLeft;
  
     // this will be "URL" for requests and "status code" for responses
-    string firstMiddle;
-    string firstRight; // this will be "Version" for requests and "phrase" for responses
-    vector<string> headers; // vector of headers lines
-    string data; // data portion of the message
-    string method; // method to be used
-    string headerString; // all headers stored as string
-    string messageString; // entire HTTP message stored as string
-    vector<uint8_t> encodedMessage; // holds incoming message stored as byte vector. Used by constructor.
+    std::string firstMiddle;
+    std::string firstRight; // this will be "Version" for requests and "phrase" for responses
+    std::vector<std::string> headers; // std::vector of headers lines
+    std::string data; // data portion of the message
+    std::string method; // method to be used
+    std::string headerString; // all headers stored as string
+    std::string messageString; // entire HTTP message stored as string
+    std::vector<uint8_t> encodedMessage; // holds incoming message stored as byte std::vector. Used by constructor.
 public:
     HttpMessage(); // constructor
     ~HttpMessage();
-    void setFirstLeft(string s); // sets the member "firstLeft"
-    void setFirstMiddle(string s); // sets the member "firstMiddle"
-    void setFirstRight(string s); // sets the member "firstRight"
+    void setFirstLeft(std::string s); // sets the member "firstLeft"
+    void setFirstMiddle(std::string s); // sets the member "firstMiddle"
+    void setFirstRight(std::string s); // sets the member "firstRight"
     virtual void setMethod(); // sets the method to be used
-    void addHeader(string s); // adds a header to the headers vector
-    void setData(string s); // sets the member "data"
-    void setHeaderString(); // sets headerString from headers vector
+    void addHeader(std::string s); // adds a header to the headers std::vector
+    void setData(std::string s); // sets the member "data"
+    void setHeaderString(); // sets headerStd::String from headers std::vector
     void createMessageString(); // creates entire HTTP message as string
-    vector<uint8_t> encode(); // encodes all portion of the message into a byte vector
-    vector<uint8_t> getEncodedMessage(); // getter for encodedMessage
-    void consume(vector<uint8_t> wire); // takes in a byte vector representation of a message and stores in messageString
-    void parseMessageString(); // parses messageString and sets appropriate message fields
-    void getMessageString();
-    string getFirstLeft();
-    string getFirstMiddle();
-    string getFirstRight();
+    std::vector<uint8_t> encode(); // encodes all portion of the message into a byte std::vector
+    std::vector<uint8_t> getEncodedMessage(); // getter for encodedMessage
+    void consume(std::vector<uint8_t> wire); // takes in a byte std::vector representation of a message and stores in messageString
+    void parseMessageString(); // parses messageStd::String and sets appropriate message fields
+    std::string getMessageString();
+    std::string getFirstLeft();
+    std::string getFirstMiddle();
+    std::string getFirstRight();
+    std::string getHeaderAtIndex(int i);
+    std::string getData(); 
+    std::vector<std::string> getHeader(); 
 };
 
 #endif //HTTPMESSAGE_H

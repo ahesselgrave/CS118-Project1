@@ -4,19 +4,27 @@
 #define HTTPRESPONSE_H
 
 #include <string>
+#include "HttpMessage.h"
 
-public HttpResponse : public HttpMessage {
+class HttpResponse : public HttpMessage {
 private:
-    string httpVersion;
+    std::string httpVersion;
     int statusCode;
-    string statusMessage;
+    std::string statusMessage;
 public:
-    HttpResponse(string httpVersion, int statusCode, string statusMessage);
-
+    HttpResponse(std::string httpVersion, int statusCode, std::string statusMessage);
+    ~HttpResponse();
     // Getters and setters
-    string getHttpVersion(); void setHttpVersion(string httpVersion);
-    int getStatusCode(); void setStatusCode(int statusCode);
-    string getStatusMessage(); void setStatusMessage(string message);
-}
+    std::string getHttpVersion(); 
+    void setHttpVersion(std::string httpVersion);
+
+    int getStatusCode();
+    void setStatusCode(int statusCode);
+
+    std::string getStatusMessage(); 
+    void setStatusMessage(std::string message);
+
+    virtual void setMethod();
+};
 
 #endif //HTTPRESPONSE_H

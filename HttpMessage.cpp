@@ -1,27 +1,25 @@
 // Implementation of HttpMessage.h
-
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <stdint.h>
 #include "HttpMessage.h"
-using namespace std;
 
 HttpMessage::HttpMessage(){}
 
 HttpMessage::~HttpMessage(){}
 
-void HttpMessage::setFirstLeft(string s){
+void HttpMessage::setFirstLeft(std::string s){
   firstLeft = s;
 }
 
 
-void HttpMessage::setFirstMiddle(string s){
+void HttpMessage::setFirstMiddle(std::string s){
   firstMiddle = s;
 }
 
-void HttpMessage::setFirstRight(string s){
+void HttpMessage::setFirstRight(std::string s){
   firstRight = s;
 }
 
@@ -31,19 +29,20 @@ void HttpMessage::setMethod(){
 }
 
 
-void HttpMessage::addHeader(string s){
+
+void HttpMessage::addHeader(std::string s){
   headers.push_back(s);
 }
 
 
-void HttpMessage::setData(string s){
+void HttpMessage::setData(std::string s){
   data = s;
 }
 
 //Tested
 void HttpMessage::setHeaderString(){
-    string partialHeader;
-    for(int i=0; i<headers.size(); i++){
+    std::string partialHeader;
+    for(unsigned int i=0; i<headers.size(); i++){
 	partialHeader = partialHeader + "\r\n" + headers[i];
     }
     headerString = partialHeader;
@@ -51,57 +50,86 @@ void HttpMessage::setHeaderString(){
 
 //Tested
 void HttpMessage::createMessageString(){
-  messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + "\r\n" + headerString + "\r\n\r\n" + data;
+    this->setHeaderString();
+    messageString = firstLeft + ' ' + firstMiddle + ' ' + firstRight + headerString + "\r\n\r\n" + data;
 }
 
 //Tested
-vector<uint8_t> HttpMessage::encode(){
-  vector<uint8_t> encodedRequest(messageString.begin(), messageString.end());
+std::vector<uint8_t> HttpMessage::encode(){
+  std::vector<uint8_t> encodedRequest(messageString.begin(), messageString.end());
   return encodedRequest;
 }
 
 //Needs teesting
-void HttpMessage::consume(vector<uint8_t> wire){
-  string consumedMessage(wire.begin(), wire.end());
+void HttpMessage::consume(std::vector<uint8_t> wire){
+  std::string consumedMessage(wire.begin(), wire.end());
   messageString = consumedMessage;
 }
 
-vector<uint8_t> HttpMessage::getEncodedMessage(){
+std::vector<uint8_t> HttpMessage::getEncodedMessage(){
   return encodedMessage;
 }
 
-string HttpMessage::getMessageString() {
-    return messageString();
+std::string HttpMessage::getMessageString() {
+    return messageString;
 }
 
 // Tested and works on strings, but not sure about large data files
 void HttpMessage::parseMessageString(){
-  istringstream messageStream(messageString);
-  string vectorTemp;
-  string lineTemp;
-  getline(messageStream, firstLeft, ' ');
-  getline(messageStream, firstMiddle, ' ');
-  getline(messageStream, firstRight, '\r');
-  getline(messageStream, lineTemp, '\n');
-  getline(messageStream, vectorTemp, '\r');
-  while(vectorTemp!=""){
-    addHeader(vectorTemp);
+    std::cout << "messageString is: \n"
+	 << messageString
+	 << std::endl;
+    std::istringstream messageStream(messageString);
+    std::string vectorTemp;
+    std::string lineTemp;
+    getline(messageStream, firstLeft, ' ');
+    getline(messageStream, firstMiddle, ' ');
+    getline(messageStream, firstRight, '\r');
     getline(messageStream, lineTemp, '\n');
-    getline(messageStream, vectorTemp, '\r'); // while check
-  }
-  getline(messageStream, lineTemp, '\n');
-  getline(messageStream, data, '\0');
-  messageStream.clear();
+    getline(messageStream, vectorTemp, '\r');
+    while(vectorTemp!=""){
+	addHeader(vectorTemp);
+	getline(messageStream, lineTemp, '\n');
+	getline(messageStream, vectorTemp, '\r'); // while check
+    }
+    getline(messageStream, lineTemp, '\n');
+    getline(messageStream, data, '\0');
+    messageStream.clear();
+    
+    if (firstLeft.compare("GET") != 0) {
+	std::cout << "firstLeft is not GET, it is "
+		  << firstLeft
+		  << std::endl;
+	throw -1;
+    }
+    if (firstRight.compare("HTTP/1.0") != 0) {
+	std::cout << "firstRight is not HTTP/1.0, it is "
+		  << firstRight 
+		  << std::endl;
+	throw -3;
+    }
 }
 
-string HttpMessage::getFirstLeft(){
+std::string HttpMessage::getFirstLeft(){
   return firstLeft;
 }
 
-string HttpMessage::getFirstMiddle(){
+std::string HttpMessage::getFirstMiddle(){
   return firstMiddle;
 }
 
-string HttpMessage::getFirstRight(){
+std::string HttpMessage::getFirstRight(){
   return firstRight;
+}
+
+std::string HttpMessage::getHeaderAtIndex(int i){
+  return headers[i];
+}
+
+std::vector<std::string> HttpMessage::getHeader(){
+  return headers;
+}
+
+std::string HttpMessage::getData(){
+  return data;
 }
