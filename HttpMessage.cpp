@@ -10,6 +10,8 @@ using namespace std;
 
 HttpMessage::HttpMessage(){}
 
+HttpMessage::~HttpMessage(){}
+
 void HttpMessage::setFirstLeft(string s){
   firstLeft = s;
 }
@@ -68,8 +70,9 @@ vector<uint8_t> HttpMessage::getEncodedMessage(){
   return encodedMessage;
 }
 
-string HttpMessage::getMessageString();
-return messageString();
+string HttpMessage::getMessageString() {
+    return messageString();
+}
 
 // Tested and works on strings, but not sure about large data files
 void HttpMessage::parseMessageString(){
