@@ -76,9 +76,6 @@ std::string HttpMessage::getMessageString() {
 
 // Tested and works on strings, but not sure about large data files
 void HttpMessage::parseMessageString(){
-    std::cout << "messageString is: \n"
-	 << messageString
-	 << std::endl;
     std::istringstream messageStream(messageString);
     std::string vectorTemp;
     std::string lineTemp;
@@ -97,13 +94,13 @@ void HttpMessage::parseMessageString(){
     messageStream.clear();
     
     if (firstLeft.compare("GET") != 0 ) {
-	std::cout << "firstLeft is not GET, it is "
+	std::cerr << "firstLeft is not GET, it is "
 		  << firstLeft
 		  << std::endl;
 	throw -1;
     }
     if (firstRight.compare("HTTP/1.0") != 0) {
-	std::cout << "firstRight is not HTTP/1.0, it is "
+	std::cerr << "firstRight is not HTTP/1.0, it is "
 		  << firstRight 
 		  << std::endl;
 	throw -3;
