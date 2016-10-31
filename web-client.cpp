@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 int main( int argc, char *argv[] )
 { 
@@ -156,7 +157,7 @@ int main( int argc, char *argv[] )
 	// Need to figure out how to store in something < 1GB
 	char buf[1024] = {0};
 	memset(buf, '\0', sizeof(buf));
-	stringstream response;
+	stringstream responseStream;
 	
 	while (true) {
 	    const int result = recv(sockfd, buf, sizeof(buf) - 1, 0);
@@ -166,11 +167,25 @@ int main( int argc, char *argv[] )
 	    } else if (result == 0) {
 		break;
 	    } else {
-		response << buf;
+		responseStream << buf;
 	    }
 	}
 	
-	cout << response.str() << endl;
+	string responseStr = responseStream.str();
+	const char *response_cStr = responseStr.c_str();
+	const char *data = strstr(response_cStr, "\r\n\r\n");
+	data += 4 * sizeof(char);
+	
+	string filename = request.getFileName();
+	filename.erase(0,1);
+	ofstream file(filename, ofstream::out);
+	if (file.is_open()) {
+	    file << data;
+	} else {
+	    perror("could not create file!");
+	    return 6;
+	}
+	file.close();
 	close(sockfd);
     }
 }

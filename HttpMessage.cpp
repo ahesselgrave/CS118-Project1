@@ -96,7 +96,7 @@ void HttpMessage::parseMessageString(){
     getline(messageStream, data, '\0');
     messageStream.clear();
     
-    if (firstLeft.compare("GET") != 0) {
+    if (firstLeft.compare("GET") != 0 ) {
 	std::cout << "firstLeft is not GET, it is "
 		  << firstLeft
 		  << std::endl;
