@@ -22,20 +22,20 @@ void HttpRequest::parseRequestInput(string input){
     string checkHttp = "http://";
     string::size_type validHttp = input.compare(0, 7, checkHttp);
     if (validHttp != 0){
-	cout << "invalid http " << endl;
+	cerr << "invalid http " << endl;
 	//host = "-1";
 	throw -1;
     }
     else {
 	string::size_type colonPosition = input.find(':', 7);
 	if (colonPosition == string::npos){
-	    cout << "no port " << input << endl;
+	    cerr << "no port " << input << endl;
 	    throw -1;
 	} 
 	else{
 	    string::size_type filePosition = input.find('/', colonPosition);
 	    if (filePosition == string::npos){
-		cout << "no file" << endl;
+		cerr << "no file" << endl;
 		//fileName = "-1";
 		throw -1;
 	    }

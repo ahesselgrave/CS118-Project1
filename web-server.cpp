@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
 	perror("setsockopt");
 	return 1;
     }  
-    std::cout << "Socket created" << std::endl;
+    // std::cout << "Socket created" << std::endl;
 
     // bind address to socket - MODIFIED SAMPLE CODE
     struct sockaddr_in addr;
@@ -87,12 +87,14 @@ int main( int argc, char *argv[] )
 	return 2;
     }
     
+    /*
     std::cout << "Socket bound to IP addr "
 	      << ipChar
 	      << " and port "
 	      << port
 	      << std::endl;
-	
+    */
+	      
     // set socket to listen status - UNMODIFIED SAMPLE CODE
     if (listen(sockfd, 15) == -1) {
 	perror("listen");
@@ -127,20 +129,24 @@ int main( int argc, char *argv[] )
 		      ipstr,
 		      sizeof(ipstr));
 	    
+	    /*
 	    std::cout << "Accepted a connection from: "
 		      << ipstr 
 		      << ":" 
 		      << ntohs(clientAddr.sin_port)
 		      << std::endl;
+	    */
 
 	    if (recv(clientSockfd, reqBuf, 1000, 0) == -1) {
 		perror("recv");
 		return 5;
 	    }
 	    
+	    /*
 	    std::cout << "Request:\n"
 		      << reqBuf
 		      << std::endl;
+	    */
 
 	    HttpMessage request;
 	    string requestStr(reqBuf);
@@ -153,14 +159,16 @@ int main( int argc, char *argv[] )
 		string file = request.getFirstMiddle();
 		file.erase(0,1);
 		
+		/*
 		std::cout << "Attempting to open \""
 			  << file
 			  << "\"\n";
+		*/
 		
 		ifstream requestFile(file);
 		
 		if (requestFile.is_open()) {
-		    std::cout << "File is open " << std::endl;
+		    // std::cout << "File is open " << std::endl;
 		    std::stringstream buffer;
 		    buffer << requestFile.rdbuf();
 		    requestFile.close();
@@ -171,7 +179,7 @@ int main( int argc, char *argv[] )
 		    response.createMessageString();
 		    sendResponse(response.encode(), clientSockfd);
 		} else {
-		    std::cout << "File not found" << std::endl;
+		    // std::cout << "File not found" << std::endl;
 		    requestFile.close();
 		    HttpResponse response("HTTP/1.0", 404, "Not Found");
 		    response.addHeader("Connection: close");
@@ -183,8 +191,10 @@ int main( int argc, char *argv[] )
 		    sendResponse(encoded, clientSockfd);
 		}
 	    } catch (...) {
+		/*
 		std::cout << "Caught exception in parseRequestInput"
 			  << std::endl;
+		*/
 
 		HttpResponse response("HTTP/1.0", 400, "Bad Request");
 		response.addHeader("Connection: close");
@@ -193,9 +203,11 @@ int main( int argc, char *argv[] )
 		    );
 		response.createMessageString();
 		
+		/*
 		std::cout << "Response: \n"
 			  << response.getMessageString()
 			  << std::endl;
+		*/
 
 		vector<uint8_t> encoded = response.encode();
 		sendResponse(encoded, clientSockfd);
