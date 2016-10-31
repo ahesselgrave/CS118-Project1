@@ -160,7 +160,7 @@ int main( int argc, char *argv[] )
 	stringstream responseStream;
 	
 	while (true) {
-	    const int result = recv(sockfd, buf, sizeof(buf) - 1, 0);
+	    const int result = recv(sockfd, buf, sizeof(buf) - 1 , MSG_WAITALL);
 	    if (result == -1) {
 		perror("recv");
 		return 5;
@@ -168,9 +168,10 @@ int main( int argc, char *argv[] )
 		break;
 	    } else {
 		responseStream << buf;
+		memset(buf, '\0', sizeof(buf));
 	    }
 	}
-	
+
 	string responseStr = responseStream.str();
 	const char *response_cStr = responseStr.c_str();
 	const char *data = strstr(response_cStr, "\r\n\r\n");
